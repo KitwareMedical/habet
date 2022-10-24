@@ -106,7 +106,7 @@ class ReportGenerator:
         anova_master_df = pd.DataFrame()
 
         # Main work
-        for (x, y, z), group in tqdm(groups):
+        for (x, y, z), group in groups:
             # First handle anova
             anova_for_voxel = pg.anova(data=group, dv="voxel_value", between=self.site_colname)
             anova_for_voxel.insert(0, "x", x)

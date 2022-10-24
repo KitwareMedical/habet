@@ -3,14 +3,13 @@
 import argparse
 
 from pathlib import Path
-
 # TODO: Make these relative imports
-from constants import AVAILABLE_HARMONIZATION_METHODS
-from harmonization.handler import HarmonizationHandler
+from harmonization.base import _registry
+from harmonization import *
 from report_generator import ReportGenerator
 
 def _handle_harmonize_cmd(args):
-    HarmonizationHandler(
+    handler.HarmonizationHandler(
         args.output_dir,
         args.harmonization_methods,
         args.df_path,
@@ -81,7 +80,7 @@ def _construct_parser():
         "named exactly the same as in input_dir",
         required=True,
         nargs="+",
-        choices=AVAILABLE_HARMONIZATION_METHODS,
+        choices=list(_registry.keys()),
     )
 
     sub_parser_harmonize.add_argument(

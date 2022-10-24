@@ -5,8 +5,7 @@ import pickle
 
 from monai.transforms import LoadImage
 from pathlib import Path
-from .global_scaling import GlobalScalingMethod
-from .combat import CombatMethod
+from .base import _registry
 
 
 class HarmonizationHandler:
@@ -27,10 +26,6 @@ class HarmonizationHandler:
         self.covariate_cols = covariate_cols
         self.mask_path = mask_path
 
-        self.method_to_class_dict = {
-            "global_scaling": GlobalScalingMethod,
-            "combat": CombatMethod,
-        }
         self.image_loader = LoadImage(image_only=False)
 
     def construct_data_matrix(self, mask=None, mask_affine=None):
@@ -119,7 +114,7 @@ class HarmonizationHandler:
             output_dir_for_method.mkdir(exist_ok=True)
             image_dir_for_method.mkdir(exist_ok=True)
 
-            method_class = self.method_to_class_dict[method_name.lower()]
+            method_class = _registry[method_name]
             method_instance = method_class(
                 data_matrix, self.df, self.site_colname, covariate_cols=self.covariate_cols
             )

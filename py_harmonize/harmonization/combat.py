@@ -4,7 +4,7 @@ from pandas.api.types import is_string_dtype, is_numeric_dtype, is_categorical_d
 from neuroCombat import neuroCombat
 from .base import HarmonizationMethod
 
-class CombatMethod(HarmonizationMethod):
+class Combat(HarmonizationMethod):
     def __init__(self, data_matrix, df, site_colname, covariate_cols=None):
         super().__init__(data_matrix, df, site_colname, covariate_cols)
 

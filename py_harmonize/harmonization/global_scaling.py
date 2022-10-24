@@ -3,7 +3,7 @@ import numpy as np
 from .base import HarmonizationMethod
 
 
-class GlobalScalingMethod(HarmonizationMethod):
+class GlobalScaling(HarmonizationMethod):
     def __init__(self, data_matrix, df, site_colname, covariate_cols=None):
         super().__init__(data_matrix, df, site_colname, covariate_cols)
 
