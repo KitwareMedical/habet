@@ -234,14 +234,22 @@ class ReportGenerator:
         # Fisher's method
         _, anova_combined_p_value = scipy.stats.combine_pvalues(anova_df["p-unc"], method="fisher")
 
+        stats_df = pd.DataFrame({
+            "total_num_anovas": [total_num_anovas],
+            "total_num_sig_anovas": [total_num_sig_anovas],
+            "frac_sig_anovas": [frac_sig_anovas],
+            "total_num_sig_t_tests": [total_num_sig_t_tests],
+            "anova_combined_p_value": [anova_combined_p_value]
+
+        })
+
+        assert stats_df.shape[0] == 1
+
         return (
             np2_im,
             sig_locs_im,
             sig_t_test_im,
-            total_num_sig_anovas,
-            frac_sig_anovas,
-            total_num_sig_t_tests,
-            anova_combined_p_value
+            stats_df,
         )
 
     def generate_report(self):
@@ -252,10 +260,7 @@ class ReportGenerator:
             np2_im,
             sig_locs_im,
             sig_t_test_im,
-            total_num_sig_anovas,
-            frac_sig_anovas,
-            total_num_sig_t_tests,
-            anova_combined_p_value,
+            aggregate_stats_df,
         ) = self._generate_from_stats(anova_df, t_test_df)
 
         ##### IO #####
@@ -265,10 +270,7 @@ class ReportGenerator:
         dipy.io.image.save_nifti(str(self.output_dir / "t_test_frac_significance.nii.gz"), sig_t_test_im, affine)
 
         # Numbers
-        self.save_with_pickle(total_num_sig_anovas, str(self.output_dir / "total_num_sig_anovas.pickle"))
-        self.save_with_pickle(frac_sig_anovas, str(self.output_dir / "frac_sig_anovas.pickle"))
-        self.save_with_pickle(total_num_sig_t_tests, str(self.output_dir / "total_num_sig_t_tests.pickle"))
-        self.save_with_pickle(anova_combined_p_value, str(self.output_dir / "anova_combined_p_value.pickle"))
+        aggregate_stats_df.to_csv(str(self.output_dir / "stats.csv"), index=False)
 
         # dfs
         if self.save_dfs:
