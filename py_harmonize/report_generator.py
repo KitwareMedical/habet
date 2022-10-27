@@ -184,9 +184,8 @@ class ReportGenerator:
         image_shape = (max_x + 1, max_y + 1, max_z + 1)
 
         ##### Anova images #####
-        anova_df["masked_np2"] = anova_df["np2"] * anova_df["significant"]
         np2_im = self.voxel_df_to_arr(
-            anova_df.x, anova_df.y, anova_df.z, anova_df.masked_np2
+            anova_df.x, anova_df.y, anova_df.z, anova_df.np2
         )
         sig_locs_im = self.voxel_df_to_arr(
             anova_df.x,
