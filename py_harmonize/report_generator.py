@@ -173,19 +173,20 @@ class ReportGenerator:
             pickle.dump(obj, fp)
 
     def _generate_from_stats(self, anova_df, t_test_df):
-        # We'll get the max x y and z from the anova table,
-        # since that has one entry for every x y and z value.
-        # If we didn't do this and only looked at the t-tests, the resulting
-        # image might be smaller, since there are only rows for voxels with
-        # significant f-statistics
-        max_x = anova_df["x"].max()
-        max_y = anova_df["y"].max()
-        max_z = anova_df["z"].max()
-        image_shape = (max_x + 1, max_y + 1, max_z + 1)
+        # Calculate the size of the output images
+        image_shape = None
+        if self.mask_path is None:
+            max_x = anova_df["x"].max()
+            max_y = anova_df["y"].max()
+            max_z = anova_df["z"].max()
+            image_shape = (max_x + 1, max_y + 1, max_z + 1)
+        else:
+            image_shape = self.mask.shape
+
 
         ##### Anova images #####
         np2_im = self.voxel_df_to_arr(
-            anova_df.x, anova_df.y, anova_df.z, anova_df.np2
+            anova_df.x, anova_df.y, anova_df.z, anova_df.np2, image_shape=image_shape
         )
         sig_locs_im = self.voxel_df_to_arr(
             anova_df.x,
@@ -195,7 +196,7 @@ class ReportGenerator:
             image_shape=image_shape,
         )
 
-        ##### t-tests images#####
+        ##### t-tests images #####
         def compute_t_test_stats_per_voxel_group(g):
             num_t_tests_for_voxel = g.shape[0]
             num_sig = g["significant"].sum()
