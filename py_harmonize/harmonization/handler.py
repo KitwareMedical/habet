@@ -70,7 +70,7 @@ class HarmonizationHandler:
             if num_voxels is None:
                 num_voxels = voxel_values.size
             else:
-                voxel_values.size == num_voxels
+                assert voxel_values.size == num_voxels
 
         image_data_matrix = np.array(image_data_matrix).T
         assert image_data_matrix.shape == (num_voxels, num_samples)
