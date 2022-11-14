@@ -9,7 +9,6 @@ class GlobalScaling(HarmonizationMethod):
 
     def _harmonize(self):
         # TODO: Some data type checking
-        # TODO: Cite from neuroCombat, keep similar
         sorted_labels, site_ids = np.unique(self.df[self.site_colname], return_inverse=True)
         num_sites = len(sorted_labels)
 
