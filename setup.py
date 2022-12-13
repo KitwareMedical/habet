@@ -19,12 +19,11 @@ setup(
         "Bug Tracker": "https://github.com/KitwareMedical/habet/issues"
     },
     install_requires=[
-        "dipy==1.5.0",
-        "monai==1.0.1",
-        "neuroCombat==0.2.12",
-        "numpy==1.21.6",
-        "pandas==1.3.5",
-        "pingouin==0.5.2",
+        "neuroCombat",
+        "numpy",
+        "pandas",
+        "pingouin",
+        "itk",
     ],
     entry_points={
         'console_scripts': [
