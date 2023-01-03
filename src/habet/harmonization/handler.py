@@ -3,11 +3,9 @@ import numpy as np
 import pickle
 import itk
 
-
 from pathlib import Path
-from .base import _registry
 from ..util import ITKImageMetadata, image_from_array
-
+from . import registry
 
 class HarmonizationHandler:
     def __init__(
@@ -66,6 +64,7 @@ class HarmonizationHandler:
         return image_data_matrix, ref_meta
 
     def handle(self):
+        registry_dict = registry.get_registry_dict()
         mask = None
         if self.mask_path is not None:
             mask = itk.imread(str(self.mask_path))
@@ -77,7 +76,7 @@ class HarmonizationHandler:
             output_dir_for_method.mkdir(exist_ok=True)
             image_dir_for_method.mkdir(exist_ok=True)
 
-            method_class = _registry[method_name]
+            method_class = registry_dict[method_name]
             method_instance = method_class(
                 data_matrix, self.df, self.site_colname, covariate_cols=self.covariate_cols
             )

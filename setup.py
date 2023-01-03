@@ -28,6 +28,10 @@ setup(
     entry_points={
         'console_scripts': [
             'habet = habet.main:main',
+        ],
+        "habet.harmonization_methods": [
+            "combat = habet.harmonization.methods.combat",
+            "global_scaling = habet.harmonization.methods.global_scaling"
         ]
     }
 )
