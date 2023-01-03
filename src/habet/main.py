@@ -3,10 +3,9 @@
 import argparse
 
 from pathlib import Path
-# TODO: Make these relative imports
-from harmonization.base import _registry
-from harmonization import *
-from report_generator import ReportGenerator
+from .harmonization.base import _registry
+from .harmonization import *
+from .report_generator import ReportGenerator
 
 def _handle_harmonize_cmd(args):
     handler.HarmonizationHandler(
@@ -153,7 +152,10 @@ def _construct_parser():
     return parser
 
 
-if __name__ == "__main__":
+def main():
     my_parser = _construct_parser()
     args = my_parser.parse_args()
     args.func(args)
+
+if __name__ == "__main__":
+    main()

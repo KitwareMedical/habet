@@ -1,13 +1,14 @@
 import pandas as pd
 import numpy as np
 import pingouin as pg
-import dipy.io.image
 import pickle
 import scipy.stats
+import itk
 
-from monai.transforms import LoadImage
 import warnings
 warnings.simplefilter(action="ignore", category=FutureWarning)
+
+from .util import ITKImageMetadata, image_from_array
 
 class ReportGenerator:
     def __init__(
@@ -30,12 +31,13 @@ class ReportGenerator:
         self.save_dfs = save_dfs
         self.mask_path = mask_path
 
-        self.image_loader = LoadImage(image_only=False)
         self.im_path_to_site_id_df = pd.read_csv(str(self.im_path_to_site_id_df_path))
         if self.mask_path is None:
-            self.mask, self.mask_affine = None, None
+            self.mask = None
+            self.mask_arr = None
         else:
-            self.mask, self.mask_affine = self.image_loader(str(mask_path))
+            self.mask = itk.imread(str(mask_path))
+            self.mask_arr = itk.array_from_image(self.mask)
 
     def _generate_voxel_wise_df(self):
         master_df = pd.DataFrame(
@@ -43,25 +45,28 @@ class ReportGenerator:
         )
 
         # All images should have the same header / metadata info
-        master_affine = None
+        ref_meta = None
 
         xs, ys, zs = None, None, None
-        if self.mask is not None:
-            xs, ys, zs = np.nonzero(self.mask)
+        if self.mask_arr is not None:
+            xs, ys, zs = np.nonzero(self.mask_arr)
+            ref_meta = ITKImageMetadata(self.mask)
 
         # Note that we go in order
         for i, (_, row) in enumerate(self.im_path_to_site_id_df.iterrows()):
-            img_data, img_meta = self.image_loader(row["image_path"])
-            if i == 0:
-                master_affine = img_meta["affine"]
+            im = itk.imread(row["image_path"])
+            im_arr = itk.array_from_image(im)
+
+            if i == 0 and ref_meta is None:
+                ref_meta = ITKImageMetadata(im)
             else:
-                assert (img_meta["affine"] == master_affine).all()
+                assert ITKImageMetadata(im) == ref_meta
 
             if xs is None and ys is None and zs is None:
-                temp_mask = np.ones(img_data.shape)
+                temp_mask = np.ones(im_arr.shape)
                 xs, ys, zs = np.nonzero(temp_mask)
 
-            voxel_values = img_data[xs, ys, zs]
+            voxel_values = im_arr[xs, ys, zs]
 
             df_for_image = pd.DataFrame(
                 {
@@ -74,7 +79,7 @@ class ReportGenerator:
             )
             master_df = pd.concat([master_df, df_for_image], ignore_index=True)
 
-        return master_df, master_affine
+        return master_df, ref_meta
 
     def _generate_stats_dfs(self, voxel_wise_df):
         # Read in dataframe, set up some other variables, etc.
@@ -161,7 +166,6 @@ class ReportGenerator:
         if image_shape is None:
             image_shape = (xs.max() + 1, ys.max() + 1, zs.max() + 1)
 
-        # Add one here because of 0-based indexing
         ret = np.zeros(image_shape)
 
         ret[xs, ys, zs] = intensity_col
@@ -172,7 +176,7 @@ class ReportGenerator:
         with open(str(path), "wb") as fp:
             pickle.dump(obj, fp)
 
-    def _generate_from_stats(self, anova_df, t_test_df):
+    def _generate_from_stats(self, anova_df, t_test_df, ref_meta):
         # Calculate the size of the output images
         image_shape = None
         if self.mask_path is None:
@@ -181,13 +185,14 @@ class ReportGenerator:
             max_z = anova_df["z"].max()
             image_shape = (max_x + 1, max_y + 1, max_z + 1)
         else:
-            image_shape = self.mask.shape
+            image_shape = self.mask_arr.shape
 
 
         ##### Anova images #####
         np2_im = self.voxel_df_to_arr(
             anova_df.x, anova_df.y, anova_df.z, anova_df.np2, image_shape=image_shape
         )
+        np2_im = image_from_array(np2_im, ref_meta)
         sig_locs_im = self.voxel_df_to_arr(
             anova_df.x,
             anova_df.y,
@@ -195,6 +200,7 @@ class ReportGenerator:
             anova_df.significant.astype(np.uint8),
             image_shape=image_shape,
         )
+        sig_locs_im = image_from_array(sig_locs_im, ref_meta)
 
         ##### t-tests images #####
         def compute_t_test_stats_per_voxel_group(g):
@@ -221,6 +227,7 @@ class ReportGenerator:
             voxel_wise_t_test_info.frac_sig,
             image_shape=image_shape,
         )
+        sig_t_test_im = image_from_array(sig_t_test_im, ref_meta)
 
         ##### Now some final numbers #####
         # First anova
@@ -254,20 +261,20 @@ class ReportGenerator:
 
     def generate_report(self):
         self.output_dir.mkdir(exist_ok=True, parents=True)
-        voxel_wise_df, affine = self._generate_voxel_wise_df()
+        voxel_wise_df, ref_meta = self._generate_voxel_wise_df()
         anova_df, t_test_df = self._generate_stats_dfs(voxel_wise_df)
         (
             np2_im,
             sig_locs_im,
             sig_t_test_im,
             aggregate_stats_df,
-        ) = self._generate_from_stats(anova_df, t_test_df)
+        ) = self._generate_from_stats(anova_df, t_test_df, ref_meta)
 
         ##### IO #####
         # Images
-        dipy.io.image.save_nifti(str(self.output_dir / "anova_np2.nii.gz"), np2_im, affine)
-        dipy.io.image.save_nifti(str(self.output_dir / "anova_significance.nii.gz"), sig_locs_im, affine)
-        dipy.io.image.save_nifti(str(self.output_dir / "t_test_frac_significance.nii.gz"), sig_t_test_im, affine)
+        itk.imwrite(np2_im, str(self.output_dir / "anova_np2.nii.gz"))
+        itk.imwrite(sig_locs_im, str(self.output_dir / "anova_significance.nii.gz"))
+        itk.imwrite(sig_t_test_im, str(self.output_dir / "t_test_frac_significance.nii.gz"))
 
         # Numbers
         aggregate_stats_df.to_csv(str(self.output_dir / "stats.csv"), index=False)
