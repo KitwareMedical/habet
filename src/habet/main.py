@@ -3,8 +3,7 @@
 import argparse
 
 from pathlib import Path
-from .harmonization.base import _registry
-from .harmonization import *
+from .harmonization import handler, registry
 from .report_generator import ReportGenerator
 
 def _handle_harmonize_cmd(args):
@@ -79,7 +78,7 @@ def _construct_parser():
         "named exactly the same as in input_dir",
         required=True,
         nargs="+",
-        choices=list(_registry.keys()),
+        choices=list(registry.get_registry_dict().keys()),
     )
 
     sub_parser_harmonize.add_argument(
@@ -153,6 +152,7 @@ def _construct_parser():
 
 
 def main():
+    registry.load_endpoints()
     my_parser = _construct_parser()
     args = my_parser.parse_args()
     args.func(args)

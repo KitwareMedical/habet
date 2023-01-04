@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-
-_registry = dict()
+from ..registry import register_harmonization_method
 
 class HarmonizationMethod(ABC):
     def __init__(self, data_matrix, df, site_colname, covariate_cols=None):
@@ -11,7 +10,7 @@ class HarmonizationMethod(ABC):
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        _registry[cls.__name__] = cls
+        register_harmonization_method(cls)
 
     @abstractmethod
     def _harmonize(self):
