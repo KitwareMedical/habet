@@ -22,14 +22,14 @@ optional arguments:
   --mask_path MASK_PATH
                         Path to harmonization mask. Harmonization will only be applied to voxels with intensity value == 1.
   --site_colname SITE_COLNAME
-                        colname of the site variable in the dataframe at df_path
+                        name of the site variable column in the table at df_path
   -o OUTPUT_DIR, --output_dir OUTPUT_DIR
                         Root directory of the harmonized images. A subdirectory for each harmonization technique is created. Each of these subdirectories contains the harmonized images for that
                         technique, named exactly the same as in input_dir
   --harmonization_methods {GlobalScaling,Combat} [{GlobalScaling,Combat} ...]
                         Root directory of the harmonized images. A subdirectory for each harmonization technique is created. Each of these subdirectories contains the harmonized images for that
                         technique, named exactly the same as in input_dir
-  --df_path DF_PATH     Path to the dataframe matching each image filename to the corresponding site id. Also contains information on any other variables / covariates to include in the harmonization
+  --df_path DF_PATH     Path to the table matching each image filename to the corresponding site id. Also contains information on any other variables / covariates to include in the harmonization
                         technique
   --covariate_cols COVARIATE_COLS [COVARIATE_COLS ...]
                         Other colnames of covariates to include. Note that columns with numerical values will be treated as continuous and columns with strings will be treated as categorical
@@ -57,17 +57,17 @@ optional arguments:
   --mask_path MASK_PATH
                         Path to harmonization mask. Harmonization will only be applied to voxels with intensity value == 1.
   --site_colname SITE_COLNAME
-                        colname of the site variable in the dataframe at df_path
+                        name of the site variable column in the table at df_path
   -o OUTPUT_DIR, --output_dir OUTPUT_DIR
                         Root directory of the report files.
   --im_path_to_site_id_df_path IM_PATH_TO_SITE_ID_DF_PATH
-                        Path to the dataframe matching each image filenameto the corresponding site id
+                        Path to the table matching each image filenameto the corresponding site id
   --anova_alpha ANOVA_ALPHA
                         Significance level for the anova to be done at each voxel
   --t_test_alpha T_TEST_ALPHA
                         Significance level for the t-tests to be done at each voxel
   --mtc                 Conduct Bonferroni multiple testing correction for the anovas and t-tests
-  --save_dfs            Save the anova and t-test dataframes as part of the report Note that these can get large in file size
+  --save_dfs            Save the anova and t-test tables as part of the report Note that these can get large in file size
 
 ```
 

@@ -46,7 +46,7 @@ def _construct_parser():
     parent_parser_site_colname = argparse.ArgumentParser(add_help=False)
     parent_parser_site_colname.add_argument(
         "--site_colname",
-        help="colname of the site variable in the dataframe at df_path",
+        help="name of the site variable column in the table at df_path",
         type=str,
         required=True
     )
@@ -83,7 +83,7 @@ def _construct_parser():
 
     sub_parser_harmonize.add_argument(
         "--df_path",
-        help="Path to the dataframe matching each image filename "
+        help="Path to the table matching each image filename "
         "to the corresponding site id. Also contains information on any other "
         "variables / covariates to include in the harmonization technique",
         type=Path,
@@ -115,7 +115,7 @@ def _construct_parser():
 
     sub_parser_report.add_argument(
         "--im_path_to_site_id_df_path",
-        help="Path to the dataframe matching each image filename"
+        help="Path to the table matching each image filename"
         "to the corresponding site id",
         type=Path,
         required=True,
@@ -143,7 +143,7 @@ def _construct_parser():
 
     sub_parser_report.add_argument(
         "--save_dfs",
-        help="Save the anova and t-test dataframes as part of the report "
+        help="Save the anova and t-test tables as part of the report "
         "Note that these can get large in file size",
         action="store_true",
     )
