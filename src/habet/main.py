@@ -38,7 +38,7 @@ def _construct_parser():
     parent_parser_mask_path = argparse.ArgumentParser(add_help=False)
     parent_parser_mask_path.add_argument(
         "--mask_path",
-        help="Path to harmonization mask. Harmonization will only be applied"
+        help="Path to harmonization mask. Harmonization will only be applied "
         "to voxels with intensity value == 1.",
         type=Path,
     )
@@ -115,7 +115,7 @@ def _construct_parser():
 
     sub_parser_report.add_argument(
         "--im_path_to_site_id_df_path",
-        help="Path to the table matching each image filename"
+        help="Path to the table matching each image filename "
         "to the corresponding site id",
         type=Path,
         required=True,

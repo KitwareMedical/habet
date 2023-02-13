@@ -61,7 +61,7 @@ optional arguments:
   -o OUTPUT_DIR, --output_dir OUTPUT_DIR
                         Root directory of the report files.
   --im_path_to_site_id_df_path IM_PATH_TO_SITE_ID_DF_PATH
-                        Path to the table matching each image filenameto the corresponding site id
+                        Path to the table matching each image filename to the corresponding site id
   --anova_alpha ANOVA_ALPHA
                         Significance level for the anova to be done at each voxel
   --t_test_alpha T_TEST_ALPHA
