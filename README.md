@@ -29,7 +29,7 @@ optional arguments:
   --harmonization_methods {GlobalScaling,Combat} [{GlobalScaling,Combat} ...]
                         Root directory of the harmonized images. A subdirectory for each harmonization technique is created. Each of these subdirectories contains the harmonized images for that
                         technique, named exactly the same as in input_dir
-  --df_path DF_PATH     Path to the table matching each image filename to the corresponding site id. Also contains information on any other variables / covariates to include in the harmonization
+  --df_path DF_PATH     Path to the table matching each image filepath to the corresponding site id. Also contains information on any other variables / covariates to include in the harmonization
                         technique
   --covariate_cols COVARIATE_COLS [COVARIATE_COLS ...]
                         Other colnames of covariates to include. Note that columns with numerical values will be treated as continuous and columns with strings will be treated as categorical
@@ -61,7 +61,7 @@ optional arguments:
   -o OUTPUT_DIR, --output_dir OUTPUT_DIR
                         Root directory of the report files.
   --im_path_to_site_id_df_path IM_PATH_TO_SITE_ID_DF_PATH
-                        Path to the table matching each image filename to the corresponding site id
+                        Path to the table matching each image filepath to the corresponding site id
   --anova_alpha ANOVA_ALPHA
                         Significance level for the anova to be done at each voxel
   --t_test_alpha T_TEST_ALPHA

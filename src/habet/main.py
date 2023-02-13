@@ -83,7 +83,7 @@ def _construct_parser():
 
     sub_parser_harmonize.add_argument(
         "--df_path",
-        help="Path to the table matching each image filename "
+        help="Path to the table matching each image file path "
         "to the corresponding site id. Also contains information on any other "
         "variables / covariates to include in the harmonization technique",
         type=Path,
@@ -115,7 +115,7 @@ def _construct_parser():
 
     sub_parser_report.add_argument(
         "--im_path_to_site_id_df_path",
-        help="Path to the table matching each image filename "
+        help="Path to the table matching each image file path "
         "to the corresponding site id",
         type=Path,
         required=True,
